@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <title>Document</title>
+
+    <style>
+#Characters::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+#Characters::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey; 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+#Characters::-webkit-scrollbar-thumb {
+  background: rgb(141, 121, 121); 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+#Characters::-webkit-scrollbar-thumb:hover {
+  background: #e2e2e2; 
+}
+        
+
+        input {
+            width: 600px;
+            height: 50px;
+            border-radius: 15px;
+            background-color: rgb(82, 80, 80);
+            color: white;
+            border: none;
+        }
+        input:focus {
+            border: 1px solid black;
+            background: transparent;
+        }
+        
+
+        #Characters {
+            height: 180px;
+            width: 600px;
+            border: 1px solid black;
+            border-top: none;
+            overflow: scroll;
+            overflow-x: hidden;
+            background-color: rgb(7, 7, 7);
+            display: none;
+            scroll-behavior: smooth;
+            
+        }
+        #cont{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 100px;
+        }
+        .white{
+            color: white;
+        }
+        
+        #name button{
+            background: transparent;
+            border: none;
+            color: white;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+        }
+        #name button:hover{
+            cursor: pointer;
+            color: yellow !important;
+        }
+        
+        ::placeholder { /* Microsoft Edge */
+    font-size: 14px;
+    padding-left: 10px;
+}
+    #logo{
+        width: 200px;
+        height: 200px;
+        margin: auto;
+    }
+    #logo img{
+        width: 100%;
+        height: 100%;
+    }
+    body{
+        background-color: black !important;
+    }
+    </style>
+
+</head>
+
+<body>
+    <div id="logo">
+        <img src="https://static.wikia.nocookie.net/starwars/images/c/cc/Star-wars-logo-new-tall.jpg/revision/latest?cb=20190313021755">
+    </div>
+    <div id="cont">
+        <input type="text" oninput="throttleFunction()" id="query" placeholder="Search for characters" autocomplete="off">
+
+        <div id="Characters">
+
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script>
+
+    let Characters_div = document.getElementById("Characters");
+    var timerId;
+
+    async function searchCharacters() {
+
+        let query = document.getElementById("query").value;
+
+        
+
+        res = await fetch(`https://swapi.dev/api/people/?search=${query}`);
+      // let res = await fetch(`https://swapi.dev/api/people/?search=Darth`);
+
+        let data = await res.json();
+
+        console.log(data);
+
+        return data.results;     
+
+    }
+
+
+    function throttleFunction() {
+         Characters_div.style.display = 'block';
+
+        if(timerId) {
+            return false;
+        }
+
+        timerId = setTimeout(() => {
+            main();
+            timerId = undefined;
+        }, 2000);
+
+
+
+    }
+
+    function appendCharacters(d) {
+
+        Characters_div.innerHTML = null;
+
+        d.forEach(({ name, birth_year, gender }) => {
+
+            let div = document.createElement('div');
+            
+
+
+            div.innerHTML = `<div id="name" class="white"><p><button>${name}</button></p></div><div class="white"><p>${gender}</p></div>`;
+
+            let span = document.createElement('div');
+            span.innerHTML = birth_year;
+            span.style.color = 'white';
+            span.style.fontSize = '13px';
+            span.style.marginLeft = '5px';
+
+
+           
+            div.style.display = 'flex';
+            div.style.justifyContent = 'space-between';
+            
+            Characters_div.append(div, span);
+            Characters_div.style.display = 'block';
+
+        });
+
+    }
+
+
+    async function main() {
+
+        let Characters = await searchCharacters();
+
+        //console.log('Characters:', Characters)
+        appendCharacters(Characters);
+
+    }
+
+
+   
+</script>
